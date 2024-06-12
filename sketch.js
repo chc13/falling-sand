@@ -1,21 +1,13 @@
-class SandGrain {
-  constructor() {
-    this._color = null;
-  }
+/* import SandGrain from "./sandgrain.js"; */
 
-  getColor() {
-    return this._color;
-  }
-
-  setColor(color) {
-    this._color = color;
-  }
-}
+let grid; //array of the play field
+const xSize = 800;
+const ySize = 800;
 
 function setup() {
   // put setup code here
   frameRate(60);
-  createCanvas(800, 800);
+  createCanvas(xSize, ySize);
   background(240);
 }
 
@@ -25,7 +17,6 @@ function draw() {
   background(240); */
   /* ellipse(50, 50, 80, 80); */
   /* rect(50, 50, 20, 20); */
-
   /*   if (mouseIsPressed) {
     fill(0);
   } else {
@@ -33,9 +24,25 @@ function draw() {
   } */
   /* stroke("black");
   ellipse(mouseX, mouseY, 80, 80); */
-
-  point(mouseX, mouseY);
+  /*  point(mouseX, mouseY);
 
   stroke("red");
-  point(100, 100);
+  point(100, 100); */
+
+  if (mouseIsPressed) {
+    point(mouseX, mouseY);
+  }
 }
+
+/* function mousePressed() {
+  point(mouseX, mouseY);
+} */
+
+//checks below coordinates to see if it's occupied
+function checkBelow(x, y) {}
+
+//renders the playfield grid
+function renderGrid() {}
+
+//simulates falling of grain of sand by one tick
+function dropGrain() {}
