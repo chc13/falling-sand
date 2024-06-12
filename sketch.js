@@ -1,8 +1,8 @@
-/* import SandGrain from "./sandgrain.js"; */
-
 let grid; //array of the play field
+
 const xSize = 800;
 const ySize = 800;
+grid = [...Array(xSize)].map((e) => Array(ySize));
 
 function setup() {
   // put setup code here
@@ -29,9 +29,15 @@ function draw() {
   stroke("red");
   point(100, 100); */
 
-  if (mouseIsPressed) {
+  /* if (mouseIsPressed) {
     point(mouseX, mouseY);
+  } */
+
+  if (mouseIsPressed) {
+    spawnGrain(mouseX, mouseY, "black");
   }
+
+  renderGrid(grid);
 }
 
 /* function mousePressed() {
@@ -42,7 +48,23 @@ function draw() {
 function checkBelow(x, y) {}
 
 //renders the playfield grid
-function renderGrid() {}
+function renderGrid(grid) {
+  for (let x = 0; x < xSize; x++) {
+    for (let y = 0; y < ySize; y++) {
+      if (grid[x][y]) {
+        stroke(grid[x][y].getColor());
+        point(x, y);
+      }
+    }
+  }
+}
+
+//spawns the grain of sand at specific coordinates with a chosen color
+function spawnGrain(x, y, color) {
+  if (x < xSize && y < ySize) {
+    grid[x][y] = new SandGrain(color);
+  }
+}
 
 //simulates falling of grain of sand by one tick
 function dropGrain() {}
