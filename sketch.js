@@ -2,7 +2,7 @@ let grid; //array of the play field
 
 const xSize = 800;
 const ySize = 800;
-grid = [...Array(xSize)].map((e) => Array(ySize));
+grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
 
 function setup() {
   // put setup code here
@@ -33,11 +33,15 @@ function draw() {
     point(mouseX, mouseY);
   } */
 
+  clear();
+  background(240);
+
   if (mouseIsPressed) {
-    spawnGrain(mouseX, mouseY, "black");
+    spawnGrain(mouseX, mouseY, "red");
   }
 
   renderGrid(grid);
+  dropGrain(grid);
 }
 
 /* function mousePressed() {
@@ -51,9 +55,10 @@ function checkBelow(x, y) {}
 function renderGrid(grid) {
   for (let x = 0; x < xSize; x++) {
     for (let y = 0; y < ySize; y++) {
-      if (grid[x][y]) {
+      if (grid[x][y] /* || grid[x][y] != undefined */) {
         stroke(grid[x][y].getColor());
         point(x, y);
+        noStroke();
       }
     }
   }
@@ -61,10 +66,24 @@ function renderGrid(grid) {
 
 //spawns the grain of sand at specific coordinates with a chosen color
 function spawnGrain(x, y, color) {
-  if (x < xSize && y < ySize) {
+  if (x < xSize && y < ySize && !grid[x][y]) {
     grid[x][y] = new SandGrain(color);
   }
 }
 
 //simulates falling of grain of sand by one tick
-function dropGrain() {}
+function dropGrain(grid) {
+  for (let x = 0; x < xSize; x++) {
+    //loop through y axis inverted to check from bottom to up
+    for (let y = ySize - 1; y >= 0; y--) {
+      //check if the floor is beneath
+      if (y + 1 >= ySize) {
+      } else {
+        if (grid[x][y] /* || grid[x][y] != undefined */) {
+          grid[x][y + 1] = grid[x][y];
+          grid[x][y] = undefined;
+        }
+      }
+    }
+  }
+}
