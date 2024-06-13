@@ -1,7 +1,8 @@
 let grid; //array of the play field
 
-const xSize = 800;
-const ySize = 800;
+//canvas sizes
+const xSize = 400;
+const ySize = 400;
 grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
 
 function setup() {
@@ -9,6 +10,9 @@ function setup() {
   frameRate(60);
   createCanvas(xSize, ySize);
   background(240);
+
+  // Set a random seed for consistency.
+  randomSeed(99);
 }
 
 function draw() {
@@ -42,6 +46,8 @@ function draw() {
 
   renderGrid(grid);
   dropGrain(grid);
+
+  /* console.log(random(1)); */
 }
 
 /* function mousePressed() {
@@ -50,7 +56,35 @@ function draw() {
 
 //checks below coordinates to see if it's occupied
 function checkBelow(x, y) {
+  if (y + 1 >= ySize) {
+    return true;
+  }
+
   if (grid[x][y + 1]) {
+    return true;
+  }
+
+  return false;
+}
+
+function checkBelowLeft(x, y) {
+  if (y + 1 >= ySize || x - 1 <= 0) {
+    return true;
+  }
+
+  if (grid[x - 1][y + 1]) {
+    return true;
+  }
+
+  return false;
+}
+
+function checkBelowRight(x, y) {
+  if (y + 1 >= ySize || x + 1 >= xSize) {
+    return true;
+  }
+
+  if (grid[x + 1][y + 1]) {
     return true;
   }
 
@@ -87,9 +121,28 @@ function dropGrain(grid) {
       if (y + 1 >= ySize) {
       } else {
         if (grid[x][y]) {
+          //check if there is room to fall directly under
           if (!checkBelow(x, y)) {
             grid[x][y + 1] = grid[x][y];
             grid[x][y] = undefined;
+          } else {
+            //check if grain can fall to the right or left
+            if (!checkBelowLeft(x, y) && !checkBelowRight(x, y)) {
+              let ran = random([0, 1]);
+              if (ran) {
+                grid[x + 1][y + 1] = grid[x][y];
+                grid[x][y] = undefined;
+              } else {
+                grid[x - 1][y + 1] = grid[x][y];
+                grid[x][y] = undefined;
+              }
+            } else if (!checkBelowLeft(x, y)) {
+              grid[x - 1][y + 1] = grid[x][y];
+              grid[x][y] = undefined;
+            } else if (!checkBelowRight(x, y)) {
+              grid[x + 1][y + 1] = grid[x][y];
+              grid[x][y] = undefined;
+            }
           }
         }
       }
