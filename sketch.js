@@ -49,14 +49,21 @@ function draw() {
 } */
 
 //checks below coordinates to see if it's occupied
-function checkBelow(x, y) {}
+function checkBelow(x, y) {
+  if (grid[x][y + 1]) {
+    return true;
+  }
+
+  return false;
+}
 
 //renders the playfield grid
 function renderGrid(grid) {
   for (let x = 0; x < xSize; x++) {
     for (let y = 0; y < ySize; y++) {
-      if (grid[x][y] /* || grid[x][y] != undefined */) {
+      if (grid[x][y]) {
         stroke(grid[x][y].getColor());
+        strokeWeight(2);
         point(x, y);
         noStroke();
       }
@@ -79,9 +86,11 @@ function dropGrain(grid) {
       //check if the floor is beneath
       if (y + 1 >= ySize) {
       } else {
-        if (grid[x][y] /* || grid[x][y] != undefined */) {
-          grid[x][y + 1] = grid[x][y];
-          grid[x][y] = undefined;
+        if (grid[x][y]) {
+          if (!checkBelow(x, y)) {
+            grid[x][y + 1] = grid[x][y];
+            grid[x][y] = undefined;
+          }
         }
       }
     }
