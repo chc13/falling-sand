@@ -1,9 +1,13 @@
 let grid; //array of the play field
 
 //canvas sizes
-const xSize = 400;
-const ySize = 400;
+const xSize = 800;
+const ySize = 600;
 grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
+
+let r = 255;
+let g = 255;
+let b = 255;
 
 function setup() {
   // put setup code here
@@ -17,21 +21,25 @@ function setup() {
 
 function draw() {
   // put drawing code here
+  let c = color(r, g, b);
 
   clear();
   background(240);
 
   if (mouseIsPressed) {
-    spawnGrain(mouseX, mouseY, "red");
+    spawnGrain(mouseX, mouseY, c);
   }
 
   renderGrid(grid);
   dropGrain(grid);
 }
 
-/* function mousePressed() {
-  point(mouseX, mouseY);
-} */
+function mousePressed() {
+  //rgb values for sand color is randomly chosen for every mouse press
+  r = random(0, 255);
+  g = random(0, 255);
+  b = random(0, 255);
+}
 
 //checks below coordinates to see if it's occupied
 function checkBelow(x, y) {
