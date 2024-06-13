@@ -17,25 +17,6 @@ function setup() {
 
 function draw() {
   // put drawing code here
-  /* clear();
-  background(240); */
-  /* ellipse(50, 50, 80, 80); */
-  /* rect(50, 50, 20, 20); */
-  /*   if (mouseIsPressed) {
-    fill(0);
-  } else {
-    fill(255);
-  } */
-  /* stroke("black");
-  ellipse(mouseX, mouseY, 80, 80); */
-  /*  point(mouseX, mouseY);
-
-  stroke("red");
-  point(100, 100); */
-
-  /* if (mouseIsPressed) {
-    point(mouseX, mouseY);
-  } */
 
   clear();
   background(240);
@@ -46,8 +27,6 @@ function draw() {
 
   renderGrid(grid);
   dropGrain(grid);
-
-  /* console.log(random(1)); */
 }
 
 /* function mousePressed() {
@@ -129,6 +108,7 @@ function dropGrain(grid) {
             //check if grain can fall to the right or left
             if (!checkBelowLeft(x, y) && !checkBelowRight(x, y)) {
               let ran = random([0, 1]);
+
               if (ran) {
                 grid[x + 1][y + 1] = grid[x][y];
                 grid[x][y] = undefined;
