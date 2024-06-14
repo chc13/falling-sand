@@ -3,17 +3,32 @@ let grid; //array of the play field
 //canvas sizes
 const xSize = 800;
 const ySize = 600;
+
 grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
 
-let r = 255;
+/* let r = 255;
 let g = 255;
-let b = 255;
+let b = 255; */
+
+var sandColor;
+
+var gui;
 
 function setup() {
   // put setup code here
   frameRate(60);
+  /* xSize = windowWidth;
+  ySize = windowHeight; */
   createCanvas(xSize, ySize);
+
   background(240);
+
+  /* sandColor = color(255, 165, 0); */
+  sandColor = "#FFA500";
+
+  //gui stuff
+  gui = createGui("p5.gui");
+  gui.addGlobals("sandColor");
 
   // Set a random seed for consistency.
   randomSeed(99);
@@ -21,7 +36,7 @@ function setup() {
 
 function draw() {
   // put drawing code here
-  let c = color(r, g, b);
+  let c = sandColor; //color(r, g, b);
 
   clear();
   background(240);
@@ -36,9 +51,9 @@ function draw() {
 
 function mousePressed() {
   //rgb values for sand color is randomly chosen for every mouse press
-  r = random(0, 255);
+  /*  r = random(0, 255);
   g = random(0, 255);
-  b = random(0, 255);
+  b = random(0, 255); */
 }
 
 //checks below coordinates to see if it's occupied
