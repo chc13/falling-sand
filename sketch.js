@@ -10,7 +10,7 @@ grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canv
 let g = 255;
 let b = 255; */
 
-var sandColor;
+var sandColor = "#FFA500";
 
 var gui;
 
@@ -23,11 +23,10 @@ function setup() {
 
   background(240);
 
-  /* sandColor = color(255, 165, 0); */
-  sandColor = "#FFA500";
+  /* sandColor = "#FFA500"; */
 
   //gui stuff
-  gui = createGui("p5.gui");
+  gui = createGui("falling sand gui");
   gui.addGlobals("sandColor");
 
   // Set a random seed for consistency.
