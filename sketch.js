@@ -11,7 +11,6 @@ let g = 255;
 let b = 255; */
 
 var sandColor = "#FFA500";
-
 var gui;
 
 function setup() {
