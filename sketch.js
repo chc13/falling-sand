@@ -11,6 +11,8 @@ let g = 255;
 let b = 255; */
 
 var sandColor = "#FFA500";
+/* var saveState = true; */
+
 var gui;
 
 function setup() {
@@ -27,6 +29,7 @@ function setup() {
   //gui stuff
   gui = createGui("falling sand gui").setPosition(width + 20, 20);
   gui.addGlobals("sandColor");
+  /* gui.addGlobals("sandColor", "saveState"); */
 
   // Set a random seed for consistency.
   randomSeed(99);
