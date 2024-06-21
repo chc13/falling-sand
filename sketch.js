@@ -25,7 +25,7 @@ function setup() {
   /* sandColor = "#FFA500"; */
 
   //gui stuff
-  gui = createGui("falling sand gui");
+  gui = createGui("falling sand gui").setPosition(width + 20, 20);
   gui.addGlobals("sandColor");
 
   // Set a random seed for consistency.
