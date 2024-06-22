@@ -4,16 +4,32 @@ let grid; //array of the play field
 const xSize = 800;
 const ySize = 600;
 
-grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
+/* grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size */
 
 /* let r = 255;
 let g = 255;
 let b = 255; */
 
 var sandColor = "#FFA500";
-/* var saveState = true; */
+var saveState;
+
+const localSaveBool = JSON.parse(localStorage.getItem("saveBool"));
+
+if (localSaveBool != null) {
+  saveState = localSaveBool;
+} else {
+  saveState = true;
+}
 
 var gui;
+
+const localSandState = JSON.parse(localStorage.getItem("sandState"));
+
+if (localSandState) {
+  grid = localSandState;
+} else {
+  grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
+}
 
 function setup() {
   // put setup code here
@@ -28,8 +44,8 @@ function setup() {
 
   //gui stuff
   gui = createGui("falling sand gui").setPosition(width + 20, 20);
-  gui.addGlobals("sandColor");
-  /* gui.addGlobals("sandColor", "saveState"); */
+
+  gui.addGlobals("sandColor", "saveState");
 
   // Set a random seed for consistency.
   randomSeed(99);
@@ -48,6 +64,14 @@ function draw() {
 
   renderGrid(grid);
   dropGrain(grid);
+
+  if (saveState) {
+    localStorage.setItem("sandState", JSON.stringify(grid));
+  } else {
+    localStorage.setItem("sandState", JSON.stringify(null));
+  }
+
+  localStorage.setItem("saveBool", JSON.stringify(saveState));
 }
 
 function mousePressed() {
@@ -99,7 +123,7 @@ function renderGrid(grid) {
   for (let x = 0; x < xSize; x++) {
     for (let y = 0; y < ySize; y++) {
       if (grid[x][y]) {
-        stroke(grid[x][y].getColor());
+        stroke(grid[x][y]._color); //TODO:BRING BACK THE getColor() function, will have to find a way to parse the local storage as SandGrain object before saving it to grid
         strokeWeight(2);
         point(x, y);
         noStroke();
