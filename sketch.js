@@ -6,19 +6,28 @@ const ySize = 600;
 
 /* grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size */
 
-/* let r = 255;
+let r = 255;
 let g = 255;
-let b = 255; */
+let b = 255;
 
 var sandColor = "#FFA500";
-var saveState;
 
+var saveState;
 const localSaveBool = JSON.parse(localStorage.getItem("saveBool"));
 
 if (localSaveBool != null) {
   saveState = localSaveBool;
 } else {
   saveState = true;
+}
+
+var randomSandColor;
+const localRandomBool = JSON.parse(localStorage.getItem("randomBool"));
+
+if (localRandomBool != null) {
+  randomSandColor = localRandomBool;
+} else {
+  randomSandColor = false;
 }
 
 var gui;
@@ -45,7 +54,7 @@ function setup() {
   //gui stuff
   gui = createGui("falling sand gui").setPosition(width + 20, 20);
 
-  gui.addGlobals("sandColor", "saveState");
+  gui.addGlobals("sandColor", "saveState", "randomSandColor");
 
   // Set a random seed for consistency.
   randomSeed(99);
@@ -59,6 +68,10 @@ function draw() {
   background(240);
 
   if (mouseIsPressed) {
+    if (randomSandColor) {
+      //c = color(r, g, b);
+      //c = rgbToHex(r, g, b);
+    }
     spawnGrain(mouseX, mouseY, c);
   }
 
@@ -72,13 +85,19 @@ function draw() {
   }
 
   localStorage.setItem("saveBool", JSON.stringify(saveState));
+  localStorage.setItem("randomBool", JSON.stringify(randomSandColor));
 }
 
 function mousePressed() {
   //rgb values for sand color is randomly chosen for every mouse press
-  /*  r = random(0, 255);
-  g = random(0, 255);
-  b = random(0, 255); */
+
+  if (randomSandColor) {
+    r = Math.round(random(0, 255));
+    g = Math.round(random(0, 255));
+    b = Math.round(random(0, 255));
+
+    sandColor = rgbToHex(r, g, b);
+  }
 }
 
 //checks below coordinates to see if it's occupied
@@ -176,4 +195,15 @@ function dropGrain(grid) {
       }
     }
   }
+}
+
+//for use to convert individual r,g,b components to hex
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+//for converting rgb values to hex
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
