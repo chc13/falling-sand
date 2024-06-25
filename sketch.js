@@ -4,6 +4,7 @@ let grid; //array of the play field
 const xSize = 800;
 const ySize = 600;
 
+//rgb values for the random color options
 let r = 255;
 let g = 255;
 let b = 255;
@@ -64,6 +65,9 @@ function draw() {
   background(240);
 
   if (mouseIsPressed) {
+    if (randomSandColor) {
+      c = rgbToHex(r, g, b);
+    }
     spawnGrain(mouseX, mouseY, c);
   }
 
@@ -87,8 +91,6 @@ function mousePressed() {
     r = Math.round(random(0, 255));
     g = Math.round(random(0, 255));
     b = Math.round(random(0, 255));
-
-    sandColor = rgbToHex(r, g, b);
   }
 }
 
