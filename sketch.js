@@ -1,5 +1,7 @@
 let grid; //array of the play field
 
+let shared; //shared object to be synced across players
+
 //canvas sizes
 const xSize = 800;
 const ySize = 600;
@@ -39,6 +41,13 @@ if (localSandState) {
   grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
 }
 
+//p5 party preload step
+function preload() {
+  partyConnect("wss://demoserver.p5party.org", "chc13_falling-sand"); //connect to p5 party example server
+
+  shared = partyLoadShared("globals");
+}
+
 function setup() {
   // put setup code here
   frameRate(60);
@@ -55,6 +64,10 @@ function setup() {
 
   // Set a random seed for consistency.
   randomSeed(99);
+
+  if (partyIsHost()) {
+    console.log("This client is the host.");
+  }
 }
 
 function draw() {
@@ -148,7 +161,9 @@ function renderGrid(grid) {
 //spawns the grain of sand at specific coordinates with a chosen color
 function spawnGrain(x, y, color) {
   if (x < xSize && y < ySize && !grid[x][y]) {
-    grid[x][y] = new SandGrain(color);
+    let temp = { _color: color }; //using this instead of SandGrain since OOP objects arent allowed to be shared through p5 party
+    grid[x][y] = temp;
+    /* grid[x][y] = new SandGrain(color); */
   }
 }
 
