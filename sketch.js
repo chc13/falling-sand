@@ -4,8 +4,6 @@ let grid; //array of the play field
 const xSize = 800;
 const ySize = 600;
 
-/* grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size */
-
 let r = 255;
 let g = 255;
 let b = 255;
@@ -49,8 +47,6 @@ function setup() {
 
   background(240);
 
-  /* sandColor = "#FFA500"; */
-
   //gui stuff
   gui = createGui("falling sand gui").setPosition(width + 20, 20);
 
@@ -62,16 +58,12 @@ function setup() {
 
 function draw() {
   // put drawing code here
-  let c = sandColor; //color(r, g, b);
+  let c = sandColor;
 
   clear();
   background(240);
 
   if (mouseIsPressed) {
-    if (randomSandColor) {
-      //c = color(r, g, b);
-      //c = rgbToHex(r, g, b);
-    }
     spawnGrain(mouseX, mouseY, c);
   }
 
@@ -89,7 +81,7 @@ function draw() {
 }
 
 function mousePressed() {
-  //rgb values for sand color is randomly chosen for every mouse press
+  //rgb values for sand color is randomly chosen for every mouse press if the random bool is checked
 
   if (randomSandColor) {
     r = Math.round(random(0, 255));
