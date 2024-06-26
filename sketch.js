@@ -62,6 +62,7 @@ function preload() {
 function setup() {
   // put setup code here
   frameRate(60);
+  //noStroke();
   /* xSize = windowWidth;
   ySize = windowHeight; */
   createCanvas(xSize, ySize);
@@ -115,6 +116,9 @@ function draw() {
   //spawn grain for players if their mouse is pressed
   for (let i = 0; i < guests.length; i++) {
     //ellipse(guests[i].x, guests[i].y, 100, 100);
+    fill(guests[i].color);
+    strokeWeight(1);
+    circle(guests[i].x, guests[i].y, 10);
     if (guests[i].mouseIsPressed) {
       spawnGrain(guests[i].x, guests[i].y, guests[i].color);
     }
