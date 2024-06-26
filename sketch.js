@@ -92,7 +92,7 @@ function draw() {
     if (randomSandColor) {
       c = rgbToHex(r, g, b);
     }
-    spawnGrain(mouseX, mouseY, c);
+    //spawnGrain(mouseX, mouseY, c);
   }
 
   renderGrid(grid);
