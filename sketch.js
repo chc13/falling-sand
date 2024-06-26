@@ -1,7 +1,5 @@
 let grid; //array of the play field
 
-let shared; //shared object to be synced across players
-
 //canvas sizes
 const xSize = 800;
 const ySize = 600;
@@ -41,11 +39,19 @@ if (localSandState) {
   grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
 }
 
+//p5 party shared objects
+//let shared; //shared object to be synced across players
+//shared = { x: 0, y: 0, color: "#FFA500" };
+let me, guests;
+
 //p5 party preload step
 function preload() {
   partyConnect("wss://demoserver.p5party.org", "chc13_falling-sand"); //connect to p5 party example server
 
-  shared = partyLoadShared("globals");
+  //shared = partyLoadShared("globals", shared);
+
+  guests = partyLoadGuestShareds();
+  me = partyLoadMyShared({ x: 0, y: 0 });
 }
 
 function setup() {
@@ -95,6 +101,19 @@ function draw() {
 
   localStorage.setItem("saveBool", JSON.stringify(saveState));
   localStorage.setItem("randomBool", JSON.stringify(randomSandColor));
+
+  /*  if (partyIsHost()) {
+    shared.x = mouseX;
+    shared.y = mouseY;
+  } */
+
+  for (let i = 0; i < guests.length; i++) {
+    ellipse(guests[i].x, guests[i].y, 100, 100);
+  }
+
+  me.x = mouseX;
+  me.y = mouseY;
+  ellipse(mouseX, mouseY, 100, 100);
 }
 
 function mousePressed() {
