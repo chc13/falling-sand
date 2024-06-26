@@ -51,7 +51,12 @@ function preload() {
   //shared = partyLoadShared("globals", shared);
 
   guests = partyLoadGuestShareds();
-  me = partyLoadMyShared({ x: 0, y: 0 });
+  me = partyLoadMyShared({
+    x: 0,
+    y: 0,
+    color: "#FFA500",
+    mouseIsPressed: false,
+  });
 }
 
 function setup() {
@@ -107,13 +112,20 @@ function draw() {
     shared.y = mouseY;
   } */
 
+  //spawn grain for players if their mouse is pressed
   for (let i = 0; i < guests.length; i++) {
-    ellipse(guests[i].x, guests[i].y, 100, 100);
+    //ellipse(guests[i].x, guests[i].y, 100, 100);
+    if (guests[i].mouseIsPressed) {
+      spawnGrain(guests[i].x, guests[i].y, guests[i].color);
+    }
   }
 
+  //updated personal shared data
   me.x = mouseX;
   me.y = mouseY;
-  ellipse(mouseX, mouseY, 100, 100);
+  //ellipse(mouseX, mouseY, 100, 100);
+  me.color = c;
+  me.mouseIsPressed = mouseIsPressed;
 }
 
 function mousePressed() {
