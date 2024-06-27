@@ -70,6 +70,11 @@ function preload() {
       color: "#FFA500",
       mouseIsPressed: false,
     });
+
+    //always create an empty canvas if it's in multiplayer
+    if (localSandState) {
+      grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
+    }
   }
 }
 
@@ -117,13 +122,16 @@ function draw() {
   renderGrid(grid);
   dropGrain(grid);
 
-  if (saveState) {
-    localStorage.setItem("sandState", JSON.stringify(grid));
-  } else {
-    localStorage.setItem("sandState", JSON.stringify(null));
-  }
+  //only save the state when it's single player
+  if (!isMultiplayer) {
+    if (saveState) {
+      localStorage.setItem("sandState", JSON.stringify(grid));
+    } else {
+      localStorage.setItem("sandState", JSON.stringify(null));
+    }
 
-  localStorage.setItem("saveBool", JSON.stringify(saveState));
+    localStorage.setItem("saveBool", JSON.stringify(saveState));
+  }
   localStorage.setItem("randomBool", JSON.stringify(randomSandColor));
 
   /*  if (partyIsHost()) {
