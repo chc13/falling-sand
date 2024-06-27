@@ -91,7 +91,11 @@ function setup() {
   //gui stuff
   gui = createGui("falling sand gui").setPosition(width + 20, 20);
 
-  gui.addGlobals("sandColor", "saveState", "randomSandColor");
+  if (!isMultiplayer) {
+    gui.addGlobals("sandColor", "saveState", "randomSandColor");
+  } else {
+    gui.addGlobals("sandColor", "randomSandColor");
+  }
 
   // Set a random seed for consistency.
   randomSeed(99);
