@@ -43,20 +43,34 @@ if (localSandState) {
 //let shared; //shared object to be synced across players
 //shared = { x: 0, y: 0, color: "#FFA500" };
 let me, guests;
+let isMultiplayer;
 
 //p5 party preload step
 function preload() {
-  partyConnect("wss://demoserver.p5party.org", "chc13_falling-sand"); //connect to p5 party example server
+  //using a class in the html to detect whether to start this in multiplayer or single player mode
+  let multiID = select(".multi-id");
 
-  //shared = partyLoadShared("globals", shared);
+  if (multiID != null) {
+    console.log("multiplayer mode detected");
+    isMultiplayer = true;
+  } else {
+    console.log("single player mode detected");
+    isMultiplayer = false;
+  }
 
-  guests = partyLoadGuestShareds();
-  me = partyLoadMyShared({
-    x: 0,
-    y: 0,
-    color: "#FFA500",
-    mouseIsPressed: false,
-  });
+  if (isMultiplayer) {
+    partyConnect("wss://demoserver.p5party.org", "chc13_falling-sand"); //connect to p5 party example server
+
+    //shared = partyLoadShared("globals", shared);
+
+    guests = partyLoadGuestShareds();
+    me = partyLoadMyShared({
+      x: 0,
+      y: 0,
+      color: "#FFA500",
+      mouseIsPressed: false,
+    });
+  }
 }
 
 function setup() {
@@ -77,8 +91,10 @@ function setup() {
   // Set a random seed for consistency.
   randomSeed(99);
 
-  if (partyIsHost()) {
-    console.log("This client is the host.");
+  if (isMultiplayer) {
+    if (partyIsHost()) {
+      console.log("This client is the host.");
+    }
   }
 }
 
@@ -93,7 +109,9 @@ function draw() {
     if (randomSandColor) {
       c = rgbToHex(r, g, b);
     }
-    //spawnGrain(mouseX, mouseY, c);
+    if (!isMultiplayer) {
+      spawnGrain(mouseX, mouseY, c);
+    }
   }
 
   renderGrid(grid);
@@ -113,23 +131,29 @@ function draw() {
     shared.y = mouseY;
   } */
 
-  //spawn grain for players if their mouse is pressed
-  for (let i = 0; i < guests.length; i++) {
-    //ellipse(guests[i].x, guests[i].y, 100, 100);
-    fill(guests[i].color);
-    strokeWeight(1);
-    circle(guests[i].x, guests[i].y, 10);
-    if (guests[i].mouseIsPressed) {
-      spawnGrain(guests[i].x, guests[i].y, guests[i].color);
+  if (isMultiplayer) {
+    //spawn grain for players if their mouse is pressed
+    for (let i = 0; i < guests.length; i++) {
+      //ellipse(guests[i].x, guests[i].y, 100, 100);
+      fill(guests[i].color);
+      strokeWeight(1);
+      circle(guests[i].x, guests[i].y, 10);
+      if (guests[i].mouseIsPressed) {
+        spawnGrain(guests[i].x, guests[i].y, guests[i].color);
+      }
     }
-  }
 
-  //updated personal shared data
-  me.x = mouseX;
-  me.y = mouseY;
-  //ellipse(mouseX, mouseY, 100, 100);
-  me.color = c;
-  me.mouseIsPressed = mouseIsPressed;
+    //updated personal shared data
+    me.x = mouseX;
+    me.y = mouseY;
+    //ellipse(mouseX, mouseY, 100, 100);
+    me.color = c;
+    me.mouseIsPressed = mouseIsPressed;
+  } else {
+    fill(c);
+    strokeWeight(1);
+    circle(mouseX, mouseY, 10);
+  }
 }
 
 function mousePressed() {
