@@ -1,4 +1,5 @@
 let grid; //array of the play field
+let canvas;
 
 //canvas sizes
 const xSize = 800;
@@ -10,6 +11,8 @@ let g = 255;
 let b = 255;
 
 var sandColor = "#FFA500";
+
+let mouseOverCanvas = false;
 
 var saveState;
 const localSaveBool = JSON.parse(localStorage.getItem("saveBool"));
@@ -37,6 +40,15 @@ if (localSandState) {
   grid = localSandState;
 } else {
   grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
+}
+
+var sandCount;
+const localSandCount = JSON.parse(localStorage.getItem("sandCount"));
+
+if (localSandCount) {
+  sandCount = localSandCount;
+} else {
+  sandCount = 0;
 }
 
 //p5 party shared objects
@@ -84,7 +96,7 @@ function setup() {
   //noStroke();
   /* xSize = windowWidth;
   ySize = windowHeight; */
-  createCanvas(xSize, ySize);
+  canvas = createCanvas(xSize, ySize);
 
   background(240);
 
@@ -114,27 +126,46 @@ function draw() {
   clear();
   background(240);
 
-  if (mouseIsPressed) {
+  //checks to see if mouse is on the canvas
+  canvas.mouseOver(function () {
+    mouseOverCanvas = true;
+  });
+  canvas.mouseOut(function () {
+    mouseOverCanvas = false;
+  });
+
+  if (mouseIsPressed && mouseOverCanvas) {
     if (randomSandColor) {
       c = rgbToHex(r, g, b);
     }
     if (!isMultiplayer) {
       spawnGrain(mouseX, mouseY, c);
+      //sandCount++;
     }
   }
 
   renderGrid(grid);
   dropGrain(grid);
 
+  //draw sandcount text for singleplayer
+  if (!isMultiplayer) {
+    textSize(18);
+    fill("black");
+    text("Total Sand: " + sandCount, 10, 20);
+  }
+
   //only save the state when it's single player
   if (!isMultiplayer) {
     if (saveState) {
       localStorage.setItem("sandState", JSON.stringify(grid));
+      localStorage.setItem("sandCount", JSON.stringify(sandCount));
     } else {
       localStorage.setItem("sandState", JSON.stringify(null));
+      localStorage.setItem("sandCount", JSON.stringify(null));
     }
 
     localStorage.setItem("saveBool", JSON.stringify(saveState));
+    /* localStorage.setItem("sandCount", JSON.stringify(sandCount)); */
   }
   localStorage.setItem("randomBool", JSON.stringify(randomSandColor));
 
@@ -235,6 +266,10 @@ function spawnGrain(x, y, color) {
     let temp = { _color: color }; //using this instead of SandGrain since OOP objects arent allowed to be shared through p5 party
     grid[x][y] = temp;
     /* grid[x][y] = new SandGrain(color); */
+
+    if (!isMultiplayer) {
+      sandCount++;
+    }
   }
 }
 
@@ -276,6 +311,13 @@ function dropGrain(grid) {
     }
   }
 }
+
+/* function mouseOverCanvas() {
+  mouseOver = true;
+}
+function mouseOutCanvas() {
+  mouseOut = false;
+} */
 
 //for use to convert individual r,g,b components to hex
 function componentToHex(c) {
