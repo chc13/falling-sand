@@ -58,6 +58,21 @@ if (localSandCount) {
 let me, guests;
 let isMultiplayer;
 
+const names = [
+  "Cookie",
+  "Potato",
+  "Lemon",
+  "Plant",
+  "Candy",
+  "Cow",
+  "Capitalist",
+  "Hero",
+  "Paperclip",
+  "Forage",
+  "Trimp",
+  "Room",
+];
+
 //p5 party preload step
 function preload() {
   //using a class in the html to detect whether to start this in multiplayer or single player mode
@@ -83,7 +98,7 @@ function preload() {
       color: "#FFA500",
       mouseIsPressed: false,
       sandCount: 0,
-      name: "default",
+      name: pick(names),
       mouseOverCanvas: false,
     });
 
@@ -122,6 +137,10 @@ function setup() {
     if (partyIsHost()) {
       console.log("This client is the host.");
     }
+
+    me.name = "Player " + guests.length;
+
+    console.log("Your name is " + me.name);
   }
 }
 
@@ -180,13 +199,28 @@ function draw() {
       fill(guests[i].color);
       strokeWeight(1);
       circle(guests[i].x, guests[i].y, 10);
+
       if (guests[i].mouseIsPressed && guests[i].mouseOverCanvas) {
-        spawnGrain(guests[i].x, guests[i].y, guests[i].color);
+        spawnGrainMulti(
+          guests[i].x,
+          guests[i].y,
+          guests[i].color,
+          guests[i].name
+        );
       }
+
+      textSize(18);
+      fill("black");
+      text(guests[i].name + ": " + guests[i].sandCount, 10, i * 20 + 48);
 
       //total up sand count for all players
       sandCountMulti += guests[i].sandCount;
     }
+
+    //draw total sand count for multi
+    textSize(18);
+    fill("black");
+    text("Total Sand: " + sandCountMulti, 10, 20);
 
     //updated personal shared data
     me.x = mouseX;
@@ -203,16 +237,21 @@ function draw() {
     fill(c);
     strokeWeight(1);
     circle(mouseX, mouseY, 10);
+
+    //draw total sand count for single player
+    textSize(18);
+    fill("black");
+    text("Total Sand: " + sandCount, 10, 20);
   }
 
-  //draw sandcount text for singleplayer
-  textSize(18);
+  //draw total sand count text
+  /* textSize(18);
   fill("black");
   if (!isMultiplayer) {
     text("Total Sand: " + sandCount, 10, 20);
   } else {
     text("Total Sand: " + sandCountMulti, 10, 20);
-  }
+  } */
 }
 
 function mousePressed() {
@@ -289,6 +328,23 @@ function spawnGrain(x, y, color) {
   }
 }
 
+//spawn grain function but for multiplayer, uses name to make sure that only their sandcount is added
+function spawnGrainMulti(x, y, color, name) {
+  if (x < xSize && y < ySize && !grid[x][y]) {
+    let temp = { _color: color }; //using this instead of SandGrain since OOP objects arent allowed to be shared through p5 party
+    grid[x][y] = temp;
+    /* grid[x][y] = new SandGrain(color); */
+
+    //if (!isMultiplayer) {
+    //sandCount++;
+    //}
+
+    if (me.name == name) {
+      sandCount++;
+    }
+  }
+}
+
 //simulates falling of grain of sand by one tick
 function dropGrain(grid) {
   for (let x = 0; x < xSize; x++) {
@@ -337,4 +393,8 @@ function componentToHex(c) {
 //for converting rgb values to hex
 function rgbToHex(r, g, b) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function pick(array) {
+  return array[Math.floor(Math.random() * array.length)];
 }
