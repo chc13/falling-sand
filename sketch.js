@@ -138,7 +138,13 @@ function setup() {
       console.log("This client is the host.");
     }
 
-    me.name = "Player " + guests.length;
+    //assign numerical name to player
+    if (guests.length == 1) {
+      me.name = 1;
+    } else {
+      me.name = guests[guests.length - 2].name + 1;
+    }
+    //me.name = "Player " + guests.length;
 
     console.log("Your name is " + me.name);
   }
@@ -211,7 +217,11 @@ function draw() {
 
       textSize(18);
       fill("black");
-      text(guests[i].name + ": " + guests[i].sandCount, 10, i * 20 + 48);
+      text(
+        "Player " + guests[i].name + ": " + guests[i].sandCount,
+        10,
+        i * 20 + 48
+      );
 
       //total up sand count for all players
       sandCountMulti += guests[i].sandCount;
