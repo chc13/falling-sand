@@ -43,6 +43,7 @@ if (localSandState) {
 }
 
 var sandCount;
+var sandCountMulti;
 const localSandCount = JSON.parse(localStorage.getItem("sandCount"));
 
 if (localSandCount) {
@@ -81,12 +82,17 @@ function preload() {
       y: 0,
       color: "#FFA500",
       mouseIsPressed: false,
+      sandCount: 0,
+      name: "default",
+      mouseOverCanvas: false,
     });
 
     //always create an empty canvas if it's in multiplayer
     if (localSandState) {
       grid = [...Array(xSize)].map((e) => Array(ySize)); //create double array of canvas size
     }
+    sandCount = 0;
+    sandCountMulti = 0;
   }
 }
 
@@ -147,13 +153,6 @@ function draw() {
   renderGrid(grid);
   dropGrain(grid);
 
-  //draw sandcount text for singleplayer
-  if (!isMultiplayer) {
-    textSize(18);
-    fill("black");
-    text("Total Sand: " + sandCount, 10, 20);
-  }
-
   //only save the state when it's single player
   if (!isMultiplayer) {
     if (saveState) {
@@ -175,27 +174,44 @@ function draw() {
   } */
 
   if (isMultiplayer) {
-    //spawn grain for players if their mouse is pressed
+    sandCountMulti = 0;
     for (let i = 0; i < guests.length; i++) {
-      //ellipse(guests[i].x, guests[i].y, 100, 100);
+      //spawn grain for players if their mouse is pressed
       fill(guests[i].color);
       strokeWeight(1);
       circle(guests[i].x, guests[i].y, 10);
-      if (guests[i].mouseIsPressed) {
+      if (guests[i].mouseIsPressed && guests[i].mouseOverCanvas) {
         spawnGrain(guests[i].x, guests[i].y, guests[i].color);
       }
+
+      //total up sand count for all players
+      sandCountMulti += guests[i].sandCount;
     }
 
     //updated personal shared data
     me.x = mouseX;
     me.y = mouseY;
-    //ellipse(mouseX, mouseY, 100, 100);
+
     me.color = c;
     me.mouseIsPressed = mouseIsPressed;
+
+    me.sandCount = sandCount;
+
+    me.mouseOverCanvas = mouseOverCanvas;
   } else {
+    //create circle cursor for single player
     fill(c);
     strokeWeight(1);
     circle(mouseX, mouseY, 10);
+  }
+
+  //draw sandcount text for singleplayer
+  textSize(18);
+  fill("black");
+  if (!isMultiplayer) {
+    text("Total Sand: " + sandCount, 10, 20);
+  } else {
+    text("Total Sand: " + sandCountMulti, 10, 20);
   }
 }
 
@@ -267,9 +283,9 @@ function spawnGrain(x, y, color) {
     grid[x][y] = temp;
     /* grid[x][y] = new SandGrain(color); */
 
-    if (!isMultiplayer) {
-      sandCount++;
-    }
+    //if (!isMultiplayer) {
+    sandCount++;
+    //}
   }
 }
 
@@ -311,13 +327,6 @@ function dropGrain(grid) {
     }
   }
 }
-
-/* function mouseOverCanvas() {
-  mouseOver = true;
-}
-function mouseOutCanvas() {
-  mouseOut = false;
-} */
 
 //for use to convert individual r,g,b components to hex
 function componentToHex(c) {
