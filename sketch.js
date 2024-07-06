@@ -58,21 +58,6 @@ if (localSandCount) {
 let me, guests;
 let isMultiplayer;
 
-const names = [
-  "Cookie",
-  "Potato",
-  "Lemon",
-  "Plant",
-  "Candy",
-  "Cow",
-  "Capitalist",
-  "Hero",
-  "Paperclip",
-  "Forage",
-  "Trimp",
-  "Room",
-];
-
 //p5 party preload step
 function preload() {
   //using a class in the html to detect whether to start this in multiplayer or single player mode
@@ -98,7 +83,7 @@ function preload() {
       color: "#FFA500",
       mouseIsPressed: false,
       sandCount: 0,
-      name: pick(names),
+      name: -1,
       mouseOverCanvas: false,
     });
 
@@ -403,8 +388,4 @@ function componentToHex(c) {
 //for converting rgb values to hex
 function rgbToHex(r, g, b) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-function pick(array) {
-  return array[Math.floor(Math.random() * array.length)];
 }
