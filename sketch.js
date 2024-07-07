@@ -71,6 +71,7 @@ function preload() {
     isMultiplayer = false;
   }
 
+  //setup p5 party multiplayer stuff
   if (isMultiplayer) {
     partyConnect("wss://demoserver.p5party.org", "chc13_falling-sand"); //connect to p5 party example server
 
@@ -99,14 +100,10 @@ function preload() {
 function setup() {
   // put setup code here
   frameRate(60);
-  //noStroke();
-  /* xSize = windowWidth;
-  ySize = windowHeight; */
   canvas = createCanvas(xSize, ySize);
-
   background(240);
 
-  //gui stuff
+  //p5 gui setup
   gui = createGui("falling sand gui").setPosition(width + 20, 20);
 
   if (!isMultiplayer) {
@@ -129,7 +126,6 @@ function setup() {
     } else {
       me.name = guests[guests.length - 2].name + 1;
     }
-    //me.name = "Player " + guests.length;
 
     console.log("Your name is " + me.name);
   }
@@ -143,6 +139,7 @@ function draw() {
   background(240);
 
   //checks to see if mouse is on the canvas
+  //TODO: there seems to be an issue where if you start the page with the mouse over the canvas it doesnt detect it
   canvas.mouseOver(function () {
     mouseOverCanvas = true;
   });
@@ -150,6 +147,7 @@ function draw() {
     mouseOverCanvas = false;
   });
 
+  //checks for mouse press event here
   if (mouseIsPressed && mouseOverCanvas) {
     if (randomSandColor) {
       c = rgbToHex(r, g, b);
@@ -163,7 +161,7 @@ function draw() {
   renderGrid(grid);
   dropGrain(grid);
 
-  //only save the state when it's single player
+  //only save the canvas state and sand count when it's single player
   if (!isMultiplayer) {
     if (saveState) {
       localStorage.setItem("sandState", JSON.stringify(grid));
@@ -174,17 +172,14 @@ function draw() {
     }
 
     localStorage.setItem("saveBool", JSON.stringify(saveState));
-    /* localStorage.setItem("sandCount", JSON.stringify(sandCount)); */
   }
-  localStorage.setItem("randomBool", JSON.stringify(randomSandColor));
 
-  /*  if (partyIsHost()) {
-    shared.x = mouseX;
-    shared.y = mouseY;
-  } */
+  localStorage.setItem("randomBool", JSON.stringify(randomSandColor));
 
   if (isMultiplayer) {
     sandCountMulti = 0;
+
+    //parse through players array
     for (let i = 0; i < guests.length; i++) {
       //spawn grain for players if their mouse is pressed
       fill(guests[i].color);
@@ -200,6 +195,7 @@ function draw() {
         );
       }
 
+      //draw sand count text for individual players
       textSize(18);
       fill("black");
       text(
@@ -212,7 +208,7 @@ function draw() {
       sandCountMulti += guests[i].sandCount;
     }
 
-    //draw total sand count for multi
+    //draw total sand count text for multi
     textSize(18);
     fill("black");
     text("Total Sand: " + sandCountMulti, 10, 20);
@@ -220,12 +216,9 @@ function draw() {
     //updated personal shared data
     me.x = mouseX;
     me.y = mouseY;
-
     me.color = c;
     me.mouseIsPressed = mouseIsPressed;
-
     me.sandCount = sandCount;
-
     me.mouseOverCanvas = mouseOverCanvas;
   } else {
     //create circle cursor for single player
@@ -233,25 +226,15 @@ function draw() {
     strokeWeight(1);
     circle(mouseX, mouseY, 10);
 
-    //draw total sand count for single player
+    //draw total sand count text for single player
     textSize(18);
     fill("black");
     text("Total Sand: " + sandCount, 10, 20);
   }
-
-  //draw total sand count text
-  /* textSize(18);
-  fill("black");
-  if (!isMultiplayer) {
-    text("Total Sand: " + sandCount, 10, 20);
-  } else {
-    text("Total Sand: " + sandCountMulti, 10, 20);
-  } */
 }
 
 function mousePressed() {
   //rgb values for sand color is randomly chosen for every mouse press if the random bool is checked
-
   if (randomSandColor) {
     r = Math.round(random(0, 255));
     g = Math.round(random(0, 255));
@@ -317,9 +300,7 @@ function spawnGrain(x, y, color) {
     grid[x][y] = temp;
     /* grid[x][y] = new SandGrain(color); */
 
-    //if (!isMultiplayer) {
     sandCount++;
-    //}
   }
 }
 
@@ -329,10 +310,6 @@ function spawnGrainMulti(x, y, color, name) {
     let temp = { _color: color }; //using this instead of SandGrain since OOP objects arent allowed to be shared through p5 party
     grid[x][y] = temp;
     /* grid[x][y] = new SandGrain(color); */
-
-    //if (!isMultiplayer) {
-    //sandCount++;
-    //}
 
     if (me.name == name) {
       sandCount++;
