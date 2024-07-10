@@ -53,10 +53,14 @@ if (localSandCount) {
 }
 
 //p5 party shared objects
-//let shared; //shared object to be synced across players
-//shared = { x: 0, y: 0, color: "#FFA500" };
+let shared; //shared object to be synced across players
+shared = { grid: null };
 let me, guests;
 let isMultiplayer;
+
+//timer values for syncing shared grid values
+let timeSet = 4000;
+let timeCount = 0;
 
 //p5 party preload step
 function preload() {
@@ -75,7 +79,7 @@ function preload() {
   if (isMultiplayer) {
     partyConnect("wss://demoserver.p5party.org", "chc13_falling-sand"); //connect to p5 party example server
 
-    //shared = partyLoadShared("globals", shared);
+    shared = partyLoadShared("globals", shared);
 
     guests = partyLoadGuestShareds();
     me = partyLoadMyShared({
@@ -118,6 +122,15 @@ function setup() {
   if (isMultiplayer) {
     if (partyIsHost()) {
       console.log("This client is the host.");
+
+      partySetShared(shared, { grid: null });
+    } else {
+      //if not the host, get the host's shared data
+      let _simpleGrid = JSON.parse(shared.grid);
+      //console.log("shared data from host: " + _simpleGrid);
+      if (_simpleGrid != null) {
+        grid = parseSimpleGrid(_simpleGrid);
+      }
     }
 
     //assign numerical name to player
@@ -127,7 +140,7 @@ function setup() {
       me.name = guests[guests.length - 2].name + 1;
     }
 
-    console.log("Your name is " + me.name);
+    console.log("Your player id is " + me.name);
   }
 }
 
@@ -172,6 +185,19 @@ function draw() {
     }
 
     localStorage.setItem("saveBool", JSON.stringify(saveState));
+  } else {
+    //if multi,host shares grid data
+    if (partyIsHost()) {
+      //shared.grid = JSON.stringify(simplifyGrid(grid)); //TODO: dont share constantly, or else itll be laggy
+
+      //syncs the grid state and then resets timer if it passes the time set
+      timeCount += deltaTime;
+      if (timeCount >= timeSet) {
+        timeCount = 0;
+        shared.grid = JSON.stringify(simplifyGrid(grid));
+        console.log("sending grid state to shared");
+      }
+    }
   }
 
   localStorage.setItem("randomBool", JSON.stringify(randomSandColor));
@@ -212,6 +238,14 @@ function draw() {
     textSize(18);
     fill("black");
     text("Total Sand: " + sandCountMulti, 10, 20);
+
+    if (partyIsHost()) {
+      textSize(18);
+      fill("black");
+      textAlign(RIGHT);
+      text("You are the Host", xSize - 10, 20);
+      textAlign(LEFT);
+    }
 
     //updated personal shared data
     me.x = mouseX;
@@ -365,4 +399,34 @@ function componentToHex(c) {
 //for converting rgb values to hex
 function rgbToHex(r, g, b) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+//let simpleGrid = []; //simple grid to be shared through p5 party shared data
+
+//ports grid into an array of data that logs only position and color and returns it
+function simplifyGrid(grid) {
+  let simpleGrid = [];
+
+  for (let x = 0; x < xSize; x++) {
+    for (let y = 0; y < ySize; y++) {
+      if (grid[x][y]) {
+        simpleGrid.push({ _x: x, _y: y, _color: grid[x][y]._color });
+      }
+    }
+  }
+
+  return simpleGrid;
+}
+
+//converts simple grid back into the actual grid double array layout
+function parseSimpleGrid(simpleGrid) {
+  let _grid = [...Array(xSize)].map((e) => Array(ySize));
+
+  for (let i = 0; i < simpleGrid.length; i++) {
+    _grid[simpleGrid[i]._x][simpleGrid[i]._y] = {
+      _color: simpleGrid[i]._color,
+    };
+  }
+
+  return _grid;
 }
