@@ -98,6 +98,10 @@ function preload() {
     }
     sandCount = 0;
     sandCountMulti = 0;
+
+    //preload callback for sync events
+    partySubscribe("syncRequest", onSyncRequest);
+    partySubscribe("syncReceive", onSyncReceive);
   }
 }
 
@@ -126,11 +130,15 @@ function setup() {
       partySetShared(shared, { grid: null });
     } else {
       //if not the host, get the host's shared data
-      let _simpleGrid = JSON.parse(shared.grid);
-      //console.log("shared data from host: " + _simpleGrid);
+      /* let _simpleGrid = JSON.parse(shared.grid);
+
       if (_simpleGrid != null) {
         grid = parseSimpleGrid(_simpleGrid);
-      }
+      } */
+
+      //ASK HOST TO UPLOAD THEIR SHARED DATA HERE
+      console.log("emitting sync request");
+      partyEmit("syncRequest", "fluff");
     }
 
     //assign numerical name to player
@@ -194,8 +202,8 @@ function draw() {
       timeCount += deltaTime;
       if (timeCount >= timeSet) {
         timeCount = 0;
-        shared.grid = JSON.stringify(simplifyGrid(grid));
-        console.log("sending grid state to shared");
+        /* shared.grid = JSON.stringify(simplifyGrid(grid));
+        console.log("sending grid state to shared"); */
       }
     }
   }
@@ -429,4 +437,35 @@ function parseSimpleGrid(simpleGrid) {
   }
 
   return _grid;
+}
+
+//sync request event, called when guests ask for host's grid state
+function onSyncRequest(fluff) {
+  console.log("receiving sync request");
+  if (isMultiplayer) {
+    if (partyIsHost()) {
+      shared.grid = JSON.stringify(simplifyGrid(grid));
+      console.log("sending grid state to shared");
+
+      //have to wait a bit before emitting sync receive or else guests loading in wont get it
+      setTimeout(function () {
+        partyEmit("syncReceive", "fluff");
+      }, 100);
+    }
+  }
+}
+
+//sync request event, called when host is done syncing their grid state
+function onSyncReceive(fluff) {
+  console.log("receiving sync receive");
+  if (isMultiplayer) {
+    if (!partyIsHost()) {
+      let _simpleGrid = JSON.parse(shared.grid);
+
+      if (_simpleGrid != null) {
+        grid = parseSimpleGrid(_simpleGrid);
+      }
+      console.log("mapping grid locally from shared");
+    }
+  }
 }
